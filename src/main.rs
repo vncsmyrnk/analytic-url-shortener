@@ -1,5 +1,7 @@
 #[macro_use]
 extern crate diesel;
+extern crate r2d2;
+extern crate r2d2_diesel;
 
 mod handlers;
 mod models;
@@ -8,10 +10,11 @@ mod schema;
 use actix_web::{web, App, HttpServer};
 use diesel::prelude::*;
 use dotenv::dotenv;
-use r2d2::{self, ConnectionManager};
+use r2d2::Pool;
+use r2d2_diesel::ConnectionManager;
 use std::env;
 
-type DbPool = r2d2::Pool<ConnectionManager<PgConnection>>;
+type DbPool = Pool<ConnectionManager<PgConnection>>;
 
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {
@@ -19,7 +22,7 @@ async fn main() -> std::io::Result<()> {
 
     let database_url = env::var("DATABASE_URL").expect("DATABASE_URL must be set");
     let manager = ConnectionManager::<PgConnection>::new(database_url);
-    let pool = r2d2::Pool::builder()
+    let pool = Pool::builder()
         .build(manager)
         .expect("Failed to create pool.");
 
