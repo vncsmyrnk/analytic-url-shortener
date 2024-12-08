@@ -1,0 +1,11 @@
+version: '3.8'
+
+services:
+  db:
+    image: postgres:13
+    environment:
+      POSTGRES_USER: pg
+      POSTGRES_PASSWORD: cGFzc3dvcmQ=
+      POSTGRES_DB: analytical-shortener
+    ports:
+      - "5432:5432"
