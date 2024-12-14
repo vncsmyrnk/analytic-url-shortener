@@ -8,7 +8,6 @@ pub struct Endpoint {
     pub id: i32,
     pub name: String,
     pub url: String,
-    pub method: String,
     pub created_at: Option<NaiveDateTime>,
     pub updated_at: Option<NaiveDateTime>,
 }
@@ -18,7 +17,6 @@ pub struct Endpoint {
 pub struct NewEndpoint {
     pub name: String,
     pub url: String,
-    pub method: String,
 }
 
 #[derive(Queryable, Serialize)]
