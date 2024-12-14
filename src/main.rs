@@ -27,6 +27,8 @@ async fn main() -> std::io::Result<()> {
             .app_data(web::Data::new(pool.clone()))
             .route("/endpoint", web::get().to(handlers::get_endpoints))
             .route("/endpoint", web::post().to(handlers::create_endpoint))
+            .route("/hit", web::get().to(handlers::get_hits))
+            .route("/hit", web::post().to(handlers::create_hit))
     })
     .bind("127.0.0.1:8080")?
     .run()

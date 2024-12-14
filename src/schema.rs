@@ -17,7 +17,6 @@ diesel::table! {
         endpoint_id -> Int4,
         hit_time -> Nullable<Timestamptz>,
         ip -> Inet,
-        country_name -> Nullable<Varchar>,
         user_agent -> Nullable<Varchar>,
     }
 }

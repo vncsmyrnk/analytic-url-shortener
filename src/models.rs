@@ -1,6 +1,5 @@
 use crate::schema::{endpoints, hits};
 use chrono::NaiveDateTime;
-use chrono::{DateTime, Utc};
 use ipnetwork::IpNetwork;
 use serde::{Deserialize, Serialize};
 
@@ -26,9 +25,8 @@ pub struct NewEndpoint {
 pub struct Hit {
     pub id: i32,
     pub endpoint_id: i32,
-    pub hit_time: Option<DateTime<Utc>>,
+    pub hit_time: Option<NaiveDateTime>,
     pub ip: IpNetwork,
-    pub country_name: Option<String>,
     pub user_agent: Option<String>,
 }
 
@@ -36,8 +34,7 @@ pub struct Hit {
 #[diesel(table_name = hits)]
 pub struct NewHit {
     pub endpoint_id: i32,
-    pub hit_time: Option<DateTime<Utc>>,
-    // pub ip: IpNetwork,
-    pub country_name: Option<String>,
+    pub hit_time: Option<NaiveDateTime>,
+    pub ip: IpNetwork,
     pub user_agent: Option<String>,
 }
