@@ -1,0 +1,8 @@
+### Creates an endpoint
+POST http://localhost:8080/endpoint
+
+{
+  "name": "a random name",
+  "url": "www.google.com",
+  "method": "POST"
+}

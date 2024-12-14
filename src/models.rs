@@ -15,7 +15,7 @@ pub struct Endpoint {
 }
 
 #[derive(Insertable, Deserialize)]
-#[table_name = "endpoints"]
+#[diesel(table_name = endpoints)]
 pub struct NewEndpoint {
     pub name: String,
     pub url: String,
@@ -33,7 +33,7 @@ pub struct Hit {
 }
 
 #[derive(Insertable, Deserialize)]
-#[table_name = "hits"]
+#[diesel(table_name = hits)]
 pub struct NewHit {
     pub endpoint_id: i32,
     pub hit_time: Option<DateTime<Utc>>,

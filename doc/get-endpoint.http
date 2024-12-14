@@ -1,0 +1,2 @@
+### Gets all endpoints
+GET http://localhost:8080/endpoint
