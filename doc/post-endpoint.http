@@ -2,6 +2,6 @@
 POST http://localhost:8080/endpoint
 
 {
-  "name": "test",
-  "url": "www.google.com"
+  "name": "myURL",
+  "url": "https://www.google.com"
 }

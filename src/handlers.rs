@@ -3,10 +3,7 @@ use std::str::FromStr;
 use crate::models::{Endpoint, Hit, NewEndpoint, NewHit};
 use crate::schema::{endpoints, hits};
 use crate::DbPool;
-use actix_web::{
-    web::{self, Redirect},
-    HttpResponse, Responder,
-};
+use actix_web::{http::header, web, HttpResponse, Responder};
 use chrono::Utc;
 use diesel::prelude::*;
 use ipnetwork::IpNetwork;
@@ -24,7 +21,7 @@ pub async fn index(pool: web::Data<DbPool>, path: web::Path<String>) -> impl Res
             endpoint_id: endpoint.id,
             hit_time: Some(Utc::now().naive_utc()),
             ip: IpNetwork::from_str("172.0.0.1/32").unwrap(),
-            user_agent: Some("any".to_string()),
+            user_agent: Some("any".to_owned()),
         };
 
         diesel::insert_into(hits::table)
@@ -40,8 +37,13 @@ pub async fn index(pool: web::Data<DbPool>, path: web::Path<String>) -> impl Res
     });
 
     match result {
-        Ok(url) => Redirect::to(url.unwrap()).temporary(),
-        Err(_) => Redirect::to("example").temporary(),
+        Ok(url) => match url {
+            Ok(value) => HttpResponse::Found()
+                .append_header((header::LOCATION, value))
+                .finish(),
+            Err(_) => HttpResponse::NotFound().finish(),
+        },
+        Err(_) => HttpResponse::InternalServerError().finish(),
     }
 }
 
