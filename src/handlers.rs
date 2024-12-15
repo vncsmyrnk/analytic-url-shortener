@@ -8,6 +8,7 @@ use chrono::Utc;
 use diesel::prelude::*;
 use ipnetwork::IpNetwork;
 use log::error;
+use tera::Tera;
 use uuid::Uuid;
 
 pub async fn index(
@@ -66,6 +67,22 @@ pub async fn index(
                 HttpResponse::NotFound().finish()
             }
         },
+        Err(_) => HttpResponse::NotFound().finish(),
+    }
+}
+
+pub async fn client_index(
+    _req: HttpRequest,
+    _pool: web::Data<DbPool>,
+    path: web::Path<String>,
+) -> impl Responder {
+    let file = format!("{}.html", path.into_inner());
+    let tera = Tera::new("client/templates/**/*.html").expect("Failed to load templates");
+    let context = tera::Context::new();
+    match tera.render(&file, &context) {
+        Ok(result) => HttpResponse::Ok()
+            .content_type("text/html; charset=utf-8")
+            .body(result),
         Err(_) => HttpResponse::NotFound().finish(),
     }
 }
