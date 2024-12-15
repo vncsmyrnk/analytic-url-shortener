@@ -3,13 +3,32 @@ use std::str::FromStr;
 use crate::models::{Endpoint, Hit, NewEndpoint, NewHit};
 use crate::schema::{endpoints, hits};
 use crate::DbPool;
-use actix_web::{http::header, web, HttpResponse, Responder};
+use actix_web::{http::header, web, HttpRequest, HttpResponse, Responder};
 use chrono::Utc;
 use diesel::prelude::*;
 use ipnetwork::IpNetwork;
+use log::error;
 
-pub async fn index(pool: web::Data<DbPool>, path: web::Path<String>) -> impl Responder {
+pub async fn index(
+    req: HttpRequest,
+    pool: web::Data<DbPool>,
+    path: web::Path<String>,
+) -> impl Responder {
     let mut conn = pool.get().expect("Couldn't get db connection from pool");
+
+    let ip_address = req
+        .peer_addr()
+        .map(|addr| addr.ip().to_string())
+        .unwrap_or_else(|| "0.0.0.0/24".to_string());
+
+    let user_agent = req
+        .headers()
+        .get("User-Agent")
+        .and_then(|ua| ua.to_str().ok())
+        .map(|ua| if ua.len() > 100 { &ua[..100] } else { ua })
+        .unwrap_or("Unknown User-Agent")
+        .to_string();
+
     let result = web::block(move || -> Result<String, diesel::result::Error> {
         use crate::schema::endpoints::dsl::*;
 
@@ -20,8 +39,8 @@ pub async fn index(pool: web::Data<DbPool>, path: web::Path<String>) -> impl Res
         let new_hit = NewHit {
             endpoint_id: endpoint.id,
             hit_time: Some(Utc::now().naive_utc()),
-            ip: IpNetwork::from_str("172.0.0.1/32").unwrap(),
-            user_agent: Some("any".to_owned()),
+            ip: IpNetwork::from_str(&ip_address).unwrap(),
+            user_agent: Some(user_agent),
         };
 
         diesel::insert_into(hits::table)
@@ -32,7 +51,7 @@ pub async fn index(pool: web::Data<DbPool>, path: web::Path<String>) -> impl Res
     })
     .await
     .map_err(|e| {
-        eprintln!("{}", e);
+        error!("{}", e);
         HttpResponse::InternalServerError().finish()
     });
 
@@ -41,9 +60,12 @@ pub async fn index(pool: web::Data<DbPool>, path: web::Path<String>) -> impl Res
             Ok(value) => HttpResponse::Found()
                 .append_header((header::LOCATION, value))
                 .finish(),
-            Err(_) => HttpResponse::NotFound().finish(),
+            Err(e) => {
+                error!("{}", e);
+                HttpResponse::NotFound().finish()
+            }
         },
-        Err(_) => HttpResponse::InternalServerError().finish(),
+        Err(_) => HttpResponse::NotFound().finish(),
     }
 }
 
@@ -53,7 +75,7 @@ pub async fn get_endpoints(pool: web::Data<DbPool>) -> impl Responder {
     let result = web::block(move || endpoints::table.load::<Endpoint>(&mut conn))
         .await
         .map_err(|e| {
-            eprintln!("{}", e);
+            error!("{}", e);
             HttpResponse::InternalServerError().finish()
         });
 
@@ -69,7 +91,7 @@ pub async fn get_hits(pool: web::Data<DbPool>) -> impl Responder {
     let result = web::block(move || hits::table.load::<Hit>(&mut conn))
         .await
         .map_err(|e| {
-            eprintln!("{}", e);
+            error!("{}", e);
             HttpResponse::InternalServerError().finish()
         });
 
@@ -93,7 +115,7 @@ pub async fn create_endpoint(
     })
     .await
     .map_err(|e| {
-        eprintln!("{}", e);
+        error!("{}", e);
         HttpResponse::InternalServerError().finish()
     });
 
@@ -115,7 +137,7 @@ pub async fn create_hit(pool: web::Data<DbPool>, item: web::Json<NewHit>) -> imp
     })
     .await
     .map_err(|e| {
-        eprintln!("{}", e);
+        error!("{}", e);
         HttpResponse::InternalServerError().finish()
     });
 
