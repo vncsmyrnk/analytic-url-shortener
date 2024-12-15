@@ -1,7 +1,7 @@
 ### Creates an endpoint
-POST http://localhost:8080/endpoint
+POST http://localhost:8080/v1/endpoint
 
 {
-  "name": "myURL",
-  "url": "https://www.google.com"
+  "name": "some random name",
+  "url": "https://www.reddit.com/"
 }

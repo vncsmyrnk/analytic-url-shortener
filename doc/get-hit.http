@@ -1,2 +1,2 @@
 ### Gets hits by endpoint
-GET http://localhost:8080/hit/1
+GET http://localhost:8080/v1/hit/1

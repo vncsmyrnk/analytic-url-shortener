@@ -1,2 +1,2 @@
 ### Gets a redirect url
-GET http://localhost:8080/r/251e92b9123
+GET http://localhost:8080/v1/r/251e92b9123

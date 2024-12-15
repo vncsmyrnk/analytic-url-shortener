@@ -27,10 +27,13 @@ async fn main() -> std::io::Result<()> {
         App::new()
             .app_data(web::Data::new(pool.clone()))
             .wrap(middleware::Logger::default())
-            .route("/r/{endpoint_hash}", web::get().to(handlers::index))
-            .route("/endpoint", web::get().to(handlers::get_endpoints))
-            .route("/endpoint", web::post().to(handlers::create_endpoint))
-            .route("/hit/{endpoint_id}", web::get().to(handlers::get_hits))
+            .service(
+                web::scope("/v1")
+                    .route("/r/{endpoint_hash}", web::get().to(handlers::index))
+                    .route("/endpoint", web::get().to(handlers::get_endpoints))
+                    .route("/endpoint", web::post().to(handlers::create_endpoint))
+                    .route("/hit/{endpoint_id}", web::get().to(handlers::get_hits)),
+            )
             .route("/health", web::to(HttpResponse::Ok))
     })
     .bind("0.0.0.0:8080")?
