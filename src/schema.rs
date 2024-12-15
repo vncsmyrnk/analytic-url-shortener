@@ -7,6 +7,8 @@ diesel::table! {
         name -> Varchar,
         #[max_length = 255]
         url -> Varchar,
+        #[max_length = 8]
+        hash -> Nullable<Varchar>,
         created_at -> Nullable<Timestamptz>,
         updated_at -> Nullable<Timestamptz>,
     }

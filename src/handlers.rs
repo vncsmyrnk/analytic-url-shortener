@@ -8,6 +8,7 @@ use chrono::Utc;
 use diesel::prelude::*;
 use ipnetwork::IpNetwork;
 use log::error;
+use uuid::Uuid;
 
 pub async fn index(
     req: HttpRequest,
@@ -33,7 +34,7 @@ pub async fn index(
         use crate::schema::endpoints::dsl::*;
 
         let endpoint = endpoints
-            .filter(name.eq(path.into_inner()))
+            .filter(hash.eq(path.into_inner()))
             .first::<Endpoint>(&mut conn)?;
 
         let new_hit = NewHit {
@@ -110,7 +111,9 @@ pub async fn create_endpoint(
     pool: web::Data<DbPool>,
     item: web::Json<NewEndpoint>,
 ) -> impl Responder {
-    let new_endpoint = item.into_inner();
+    let mut new_endpoint = item.into_inner();
+    let my_uuid = Uuid::new_v4();
+    new_endpoint.hash = Some(my_uuid.to_string().chars().take(8).collect::<String>());
 
     let result = web::block(move || {
         let mut conn = pool.get().expect("Couldn't get db connection from pool");
