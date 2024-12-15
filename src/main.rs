@@ -32,6 +32,7 @@ async fn main() -> std::io::Result<()> {
             .route("/endpoint", web::post().to(handlers::create_endpoint))
             .route("/hit", web::get().to(handlers::get_hits))
             .route("/hit", web::post().to(handlers::create_hit))
+            .route("/health", web::to(HttpResponse::Ok))
     })
     .bind("127.0.0.1:8080")?
     .run()
