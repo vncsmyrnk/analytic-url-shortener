@@ -5,7 +5,7 @@ mod handlers;
 mod models;
 mod schema;
 
-use actix_web::{middleware, web, App, HttpServer};
+use actix_web::{middleware, web, App, HttpResponse, HttpServer};
 use diesel::{prelude::*, r2d2};
 use dotenv::dotenv;
 use std::env;
@@ -30,8 +30,7 @@ async fn main() -> std::io::Result<()> {
             .route("/r/{endpoint_name}", web::get().to(handlers::index))
             .route("/endpoint", web::get().to(handlers::get_endpoints))
             .route("/endpoint", web::post().to(handlers::create_endpoint))
-            .route("/hit", web::get().to(handlers::get_hits))
-            .route("/hit", web::post().to(handlers::create_hit))
+            .route("/hit/{endpoint_id}", web::get().to(handlers::get_hits))
             .route("/health", web::to(HttpResponse::Ok))
     })
     .bind("127.0.0.1:8080")?
