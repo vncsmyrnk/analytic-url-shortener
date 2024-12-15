@@ -11,13 +11,32 @@
       </div>
       <form class="row g-3">
         <div class="mb-3">
-          <label for="exampleFormControlInput1" class="form-label">URL to redirect</label>
-          <input type="url" class="form-control" id="exampleFormControlInput1" placeholder="https://www.google.com" required>
+          <label for="exampleFormControlInput1" class="form-label">Hash</label>
+          <input type="text" class="form-control" id="exampleFormControlInput1" placeholder="251e92b9123" required>
         </div>
         <div class="mb-3">
-          <button type="submit" onclick="handleButtonClick()" class="btn btn-primary mb-3">Do it!</button>
+          <button type="submit" onclick="handleButtonClick()" class="btn btn-primary mb-3">Check it</button>
         </div>
       </form>
+
+      <div class="list-group">
+        <a href="#" class="list-group-item list-group-item-action" aria-current="true">
+          <div class="d-flex w-100 justify-content-between">
+            <h5 class="mb-1">192.168.0.1</h5>
+            <small>3 days ago</small>
+          </div>
+          <p class="mb-1">Mozilla/5.0 (X11; Linux x86_64)</p>
+          <small>2024-01-03 19:00:00</small>
+        </a>
+        <a href="#" class="list-group-item list-group-item-action" aria-current="true">
+          <div class="d-flex w-100 justify-content-between">
+            <h5 class="mb-1">192.168.0.2</h5>
+            <small>5 days ago</small>
+          </div>
+          <p class="mb-1">Mozilla/5.0 (X11; Linux x86_64)</p>
+          <small>2024-01-01 14:00:00</small>
+        </a>
+      </div>
     </div>
 
     <script>
