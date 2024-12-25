@@ -5,7 +5,7 @@
     <h5 class="card-title"><b>Your URL is ready!</b></h5>
     <p class="card-text"><a href="<%= url %>"><%= url %></a></p>
     <p class="card-text">Save the URL's hash for searching for hits</p>
-    <a href="/hits/<%= hash %>" class="card-link">Check hits now</a>
+    <a href="/hits?endpoint_hash=<%= hash %>" class="card-link">Check hits now</a>
     <a href="/" class="card-link">Go back</a>
   </div>
 </div>

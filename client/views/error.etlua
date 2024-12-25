@@ -1,0 +1,5 @@
+<!-- vim: set filetype=html : -->
+
+<div>
+  <%= message %>
+</div>

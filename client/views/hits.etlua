@@ -1,21 +1,21 @@
 <!-- vim: set filetype=html : -->
 
-<form class="row g-3">
+<form class="row g-3" action="/hits" method="get">
   <div>
     <label for="exampleFormControlInput1" class="form-label">Search for hits by typing a hash</label>
-    <input type="text" class="form-control" id="exampleFormControlInput1" placeholder="251e92b9123" required>
+    <input type="text" name="endpoint_hash" class="form-control" id="exampleFormControlInput1" placeholder="251e92b9123" required>
   </div>
   <div class="mb-3">
-    <button type="submit" onclick="handleButtonClick()" class="btn btn-primary mb-3">Check it</button>
+    <button type="submit" class="btn btn-primary mb-3">Check it</button>
   </div>
 </form>
 
-<% if not url then %>
-<p>No URL specified.</p>
+<% if not hash then %>
+<p>No hash specified.</p>
 <% elseif #hits == 0 then %>
 <p>No hits found.</p>
 <% else %>
-<p>Hits for <a href="<%= url %>"><%= url %></a></p>
+<p>Hits for <%= hash %></p>
 <div class="list-group">
   <% for i, hit in ipairs(hits) do %>
   <a href="#" class="list-group-item list-group-item-action" aria-current="true">

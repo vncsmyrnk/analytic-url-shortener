@@ -1,11 +1,14 @@
 local lapis = require("lapis")
+local util = require("util")
+local Model = require("lapis.db.model").Model
+
 local app = lapis.Application()
 
-local Model = require("lapis.db.model").Model
 local Endpoints = Model:extend("endpoints", {
   timestamp = true,
 })
 local Hits = Model:extend("hits")
+
 local uuid = require("uuid")
 uuid.randomseed(os.time())
 uuid.set_rng(function(bytes)
@@ -55,6 +58,31 @@ app:get("/endpoint/:id/hits", function(self)
   return { json = hits }
 end)
 
+app:get("/hits/:endpoint_hash", function(self)
+  local endpoint = Endpoints:find({ hash = self.params.endpoint_hash })
+  if not endpoint then
+    return { status = 404, layout = false }
+  end
+  local hits = Hits:find_all({ endpoint.id }, "endpoint_id")
+  if #hits == 0 then
+    return { status = 404, layout = false }
+  end
+  for _, hit in ipairs(hits) do
+    local pattern = "(%d+)%-(%d+)%-(%d+) (%d+):(%d+):(%d+)"
+    local year, month, day, hour, min, sec = hit["hit_time"]:match(pattern)
+    local timestamp = os.time({
+      year = year,
+      month = month,
+      day = day,
+      hour = hour,
+      min = min,
+      sec = sec,
+    })
+    hit["last_hit_desc"] = util:time_ago_in_words(timestamp)
+  end
+  return { json = hits }
+end)
+
 app:post(
   "/endpoint",
   json_params(function(self)
@@ -64,7 +92,10 @@ app:post(
       hash = uuid(),
     }
     local endpoint = Endpoints:create(new_endpoint)
-    return { json = { endpoint } }
+    local parsed_url = self.req.parsed_url
+    local base_url = parsed_url.scheme .. "://" .. parsed_url.host .. ":" .. parsed_url.port
+    endpoint["url"] = base_url .. "/r/" .. endpoint["hash"]
+    return { json = endpoint }
   end)
 )
 
