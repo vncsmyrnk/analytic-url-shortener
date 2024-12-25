@@ -12,3 +12,10 @@ config("development", {
     database = "analytical-shortener",
   },
 })
+
+config("production", {
+  server = "nginx",
+  code_cache = "on",
+  num_workers = "5",
+  port = 80,
+})

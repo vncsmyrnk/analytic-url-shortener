@@ -1,25 +1,13 @@
 local lapis = require("lapis")
 local util = require("util")
-local Model = require("lapis.db.model").Model
+local uuid = require("_uuid")
+local json_params = require("lapis.application").json_params
+local models = require("_models")
+
+local Endpoints = models.Endpoints
+local Hits = models.Hits
 
 local app = lapis.Application()
-
-local Endpoints = Model:extend("endpoints", {
-  timestamp = true,
-})
-local Hits = Model:extend("hits")
-
-local uuid = require("uuid")
-uuid.randomseed(os.time())
-uuid.set_rng(function(bytes)
-  local random_bytes = ""
-  for _ = 1, bytes do
-    random_bytes = random_bytes .. string.char(math.random(0, 255))
-  end
-  return random_bytes
-end)
-
-local json_params = require("lapis.application").json_params
 
 app:get("/r/:hash", function(self)
   local endpoint = Endpoints:find({ hash = self.params.hash })
@@ -27,7 +15,7 @@ app:get("/r/:hash", function(self)
     return { status = 404, layout = false }
   end
   local new_hit = {
-    hit_time = os.date("%Y-%m-%d %H:%M:%S"),
+    hit_time = util:current_time_string(),
     endpoint_id = endpoint.id,
     ip = self.req.remote_addr or "0.0.0.0",
     user_agent = self.req.headers["user-agent"] or "unknown",
@@ -43,6 +31,8 @@ app:get("/endpoint/:id", function(self)
   if not endpoint then
     return { status = 404, layout = false }
   end
+  endpoint["custom_url"] =
+    self:build_url("/r/" .. endpoint["hash"], { host = util:origin_host(), port = util:origin_port() })
   return { json = endpoint }
 end)
 
@@ -68,19 +58,12 @@ app:get("/hits/:endpoint_hash", function(self)
     return { status = 404, layout = false }
   end
   for _, hit in ipairs(hits) do
-    local pattern = "(%d+)%-(%d+)%-(%d+) (%d+):(%d+):(%d+)"
-    local year, month, day, hour, min, sec = hit["hit_time"]:match(pattern)
-    local timestamp = os.time({
-      year = year,
-      month = month,
-      day = day,
-      hour = hour,
-      min = min,
-      sec = sec,
-    })
-    hit["last_hit_desc"] = util:time_ago_in_words(timestamp)
+    local hit_timestamp = util:time_string_to_timestamp(hit["hit_time"])
+    hit["last_hit_desc"] = util:time_ago_in_words(hit_timestamp)
   end
-  return { json = hits }
+  endpoint["custom_url"] =
+    self:build_url("/r/" .. endpoint["hash"], { host = util:origin_host(), port = util:origin_port() })
+  return { json = { endpoint = endpoint, hits = hits } }
 end)
 
 app:post(
@@ -92,11 +75,24 @@ app:post(
       hash = uuid(),
     }
     local endpoint = Endpoints:create(new_endpoint)
-    local parsed_url = self.req.parsed_url
-    local base_url = parsed_url.scheme .. "://" .. parsed_url.host .. ":" .. parsed_url.port
-    endpoint["url"] = base_url .. "/r/" .. endpoint["hash"]
+    endpoint["custom_url"] =
+      self:build_url("/r/" .. endpoint["hash"], { host = util:origin_host(), port = util:origin_port() })
     return { json = endpoint }
   end)
 )
+
+function app:handle_error(err, trace)
+  ngx.log(ngx.ERR, "Error: ", err)
+  ngx.log(ngx.ERR, "Trace: ", trace)
+
+  return {
+    status = 500,
+    json = {
+      message = "An unexpected error occurred.",
+      error = err,
+      trace = trace,
+    },
+  }
+end
 
 return app

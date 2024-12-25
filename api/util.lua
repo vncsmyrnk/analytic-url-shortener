@@ -17,4 +17,32 @@ function util:time_ago_in_words(timestamp)
   end
 end
 
+function util:current_time_string()
+  return os.date("%Y-%m-%d %H:%M:%S")
+end
+
+function util:time_string_to_timestamp(time_string)
+  local pattern = "(%d+)%-(%d+)%-(%d+) (%d+):(%d+):(%d+)"
+  local year, month, day, hour, min, sec = time_string:match(pattern)
+  local timestamp = os.time({
+    year = year,
+    month = month,
+    day = day,
+    hour = hour,
+    min = min,
+    sec = sec,
+  })
+  return timestamp
+end
+
+function util:origin_host()
+  local host = ngx.var.host
+  return host
+end
+
+function util:origin_port()
+  local port = ngx.var.server_port
+  return port
+end
+
 return util
