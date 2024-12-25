@@ -2,6 +2,6 @@
 POST http://localhost:8080/endpoint
 
 {
-  "name": "an endpoint name",
-  "url": "https://www.google.com/"
+  "name": "a youtube meme",
+  "url": "https://www.youtube.com/watch?v=Qk80QK_EbxA"
 }
