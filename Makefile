@@ -1,14 +1,11 @@
-run:
-	cargo watch -x run
-
-build:
-	cargo build --release
-
 dep:
-	@docker compose up -d
+	yay -S openresty lua51
 
-down:
-	@docker compose stop
+luarocks-install:
+	luarocks --local --lua-version=5.1 install lapis luabitop uuid
 
-run-migrations:
-	diesel migration run
+start-api:
+	(cd api/ && lapis server)
+
+stop-api:
+	(cd api/ && lapis term)
