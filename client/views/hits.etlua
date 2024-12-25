@@ -1,0 +1,32 @@
+<!-- vim: set filetype=html : -->
+
+<form class="row g-3">
+  <div>
+    <label for="exampleFormControlInput1" class="form-label">Search for hits by typing a hash</label>
+    <input type="text" class="form-control" id="exampleFormControlInput1" placeholder="251e92b9123" required>
+  </div>
+  <div class="mb-3">
+    <button type="submit" onclick="handleButtonClick()" class="btn btn-primary mb-3">Check it</button>
+  </div>
+</form>
+
+<% if not url then %>
+<p>No URL specified.</p>
+<% elseif #hits == 0 then %>
+<p>No hits found.</p>
+<% else %>
+<p>Hits for <a href="<%= url %>"><%= url %></a></p>
+<div class="list-group">
+  <% for i, hit in ipairs(hits) do %>
+  <a href="#" class="list-group-item list-group-item-action" aria-current="true">
+    <div class="d-flex w-100 justify-content-between">
+      <h5 class="mb-1"><%= hit.ip %></h5>
+      <small><%= hit.last_hit_desc %></small>
+    </div>
+    <p class="mb-1"><%= hit.user_agent %></p>
+    <small><%= hit.hit_time %></small>
+  </a>
+  <% end %>
+</div>
+<% end %>
+

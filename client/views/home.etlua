@@ -1,0 +1,11 @@
+<!-- vim: set filetype=html : -->
+
+<form class="row g-3" action="/" method="post">
+  <div>
+    <label for="exampleFormControlInput1" class="form-label">URL to redirect</label>
+    <input type="url" name="url" class="form-control" id="exampleFormControlInput1" placeholder="https://www.google.com" required>
+  </div>
+  <div class="mb-3">
+    <button type="submit" class="btn btn-primary mb-3">Do it!</button>
+  </div>
+</form>
