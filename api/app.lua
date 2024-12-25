@@ -26,8 +26,8 @@ app:get("/r/:hash", function(self)
   local new_hit = {
     hit_time = os.date("%Y-%m-%d %H:%M:%S"),
     endpoint_id = endpoint.id,
-    ip = self.req.headers["x-forwarded-for"] or self.req.headers["remote-addr"] or "0.0.0.0",
-    user_agent = self.req.headers["user-agent"],
+    ip = self.req.remote_addr or "0.0.0.0",
+    user_agent = self.req.headers["user-agent"] or "unknown",
   }
   Hits:create(new_hit)
   return {
