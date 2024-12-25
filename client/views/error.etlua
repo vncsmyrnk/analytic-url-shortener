@@ -1,5 +1,7 @@
 <!-- vim: set filetype=html : -->
 
 <div>
-  <%= message %>
+  <% for _, error in ipairs(errors) do %>
+  <p><b>Unexpected Error</b>: <%= error %></p>
+  <% end %>
 </div>

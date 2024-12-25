@@ -5,4 +5,5 @@ config("development", {
   code_cache = "off",
   num_workers = "1",
   port = 8081,
+  api_url = os.getenv("API_URL") or "http://localhost:8080",
 })

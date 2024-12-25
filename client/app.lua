@@ -1,6 +1,10 @@
 local lapis = require("lapis")
 local http = require("lapis.nginx.http")
 local cjson = require("cjson")
+local app_helpers = require("lapis.application")
+local config = require("lapis.config").get()
+
+local capture_errors, yield_error = app_helpers.capture_errors, app_helpers.yield_error
 
 local app = lapis.Application()
 app.layout = "layout"
@@ -10,37 +14,49 @@ app:get("/", function()
   return { render = "home" }
 end)
 
-app:post("/", function(self)
-  local body, status_code, _ = http.simple("http://127.0.0.1:8080/endpoint", {
-    name = "name",
-    url = self.POST.url,
+app:post(
+  "/",
+  capture_errors({
+    on_error = function()
+      return { render = "error", status = 500 }
+    end,
+    function(self)
+      local body, status_code, _ = http.simple(config.api_url .. "/endpoint", {
+        name = "name",
+        url = self.POST.url,
+      })
+      if status_code ~= 200 then
+        yield_error("Unable to fetch data")
+      end
+      local data = cjson.decode(body)
+      self.url = data["url"]
+      self.hash = data["hash"]
+      return { render = "ready-url" }
+    end,
   })
-  if status_code ~= 200 then
-    self.message = body
-    return { render = "error" }
-  end
-  local data = cjson.decode(body)
-  print(body)
-  self.url = data["url"]
-  self.hash = data["hash"]
-  return { render = "ready-url" }
-end)
+)
 
-app:get("/hits", function(self)
-  if not self.params.endpoint_hash then
-    return { render = "hits" }
-  end
+app:get(
+  "/hits",
+  capture_errors({
+    on_error = function()
+      return { render = "error", status = 500 }
+    end,
+    function(self)
+      if not self.params.endpoint_hash then
+        return { render = "hits" }
+      end
 
-  local body, status_code, _ = http.simple("http://127.0.0.1:8080/hits/" .. self.params.endpoint_hash)
-  if status_code ~= 200 then
-    self.message = body
-    return { render = "error" }
-  end
-  local data = cjson.decode(body)
-  print(body)
-  self.hits = data
-  self.hash = self.params.endpoint_hash
-  return { render = "hits" }
-end)
+      local body, status_code, _ = http.simple(config.api_url .. "/hits/" .. self.params.endpoint_hash)
+      if status_code ~= 200 then
+        yield_error("Unable to fetch data")
+      end
+      local data = cjson.decode(body)
+      self.hits = data
+      self.hash = self.params.endpoint_hash
+      return { render = "hits" }
+    end,
+  })
+)
 
 return app
