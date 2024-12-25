@@ -4,8 +4,8 @@ dep:
 luarocks-install:
 	luarocks --local --lua-version=5.1 install lapis luabitop uuid
 
-start-api:
+run-api:
 	(cd api/ && lapis server)
 
-stop-api:
-	(cd api/ && lapis term)
+run-client:
+	(cd client/ && lapis server)
