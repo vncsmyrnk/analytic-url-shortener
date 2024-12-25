@@ -2,9 +2,10 @@
 
 <div class="card">
   <div class="card-body">
-    <h5 class="card-title"><b>Your URL is ready!</b></h5>
-    <p class="card-text"><a href="<%= url %>"><%= url %></a></p>
-    <p class="card-text">Save the URL's hash for searching for hits</p>
+    <h4 class="card-title"><b>Your URL is ready!</b></h4>
+    <h5 class="card-text mb-4"><a href="<%= custom_url %>"><%= custom_url %></a></h5>
+    <p class="card-text my-0">It now redirects to <a href="<%= url %>"><%= url %></a></p>
+    <p class="card-text my-0 mb-2">Save the URL's hash for searching for hits</p>
     <a href="/hits?endpoint_hash=<%= hash %>" class="card-link">Check hits now</a>
     <a href="/" class="card-link">Go back</a>
   </div>

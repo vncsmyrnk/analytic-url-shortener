@@ -15,7 +15,7 @@
 <% elseif #hits == 0 then %>
 <p>No hits found.</p>
 <% else %>
-<p>Hits for <%= hash %></p>
+<p>Hits for <a href="<%= custom_url %>"><%= custom_url %></a>, redirecting to <a href="<%= url %>"><%= url %></a></p>
 <div class="list-group">
   <% for i, hit in ipairs(hits) do %>
   <a href="#" class="list-group-item list-group-item-action" aria-current="true">

@@ -30,6 +30,7 @@ app:post(
       end
       local data = cjson.decode(body)
       self.url = data["url"]
+      self.custom_url = data["custom_url"]
       self.hash = data["hash"]
       return { render = "ready-url" }
     end,
@@ -47,13 +48,19 @@ app:get(
         return { render = "hits" }
       end
 
+      self.hash = self.params.endpoint_hash
       local body, status_code, _ = http.simple(config.api_url .. "/hits/" .. self.params.endpoint_hash)
-      if status_code ~= 200 then
+      if status_code >= 500 then
         yield_error("Unable to fetch data")
       end
+      if status_code == 404 then
+        self.hits = {}
+        return { render = "hits" }
+      end
       local data = cjson.decode(body)
-      self.hits = data
-      self.hash = self.params.endpoint_hash
+      self.hits = data.hits
+      self.url = data.endpoint.url
+      self.custom_url = data.endpoint.custom_url
       return { render = "hits" }
     end,
   })
