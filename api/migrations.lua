@@ -5,7 +5,6 @@ return {
   [1734904670] = function()
     schema.create_table("endpoints", {
       { "id", types.serial({ primary_key = true }) },
-      { "name", types.varchar },
       { "url", types.varchar },
       { "hash", types.varchar },
       { "created_at", types.time },

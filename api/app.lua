@@ -70,7 +70,6 @@ app:post(
   "/endpoint",
   json_params(function(self)
     local new_endpoint = {
-      name = self.params.name,
       url = self.params.url,
       hash = uuid(),
     }

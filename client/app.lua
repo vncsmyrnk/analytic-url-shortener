@@ -22,7 +22,6 @@ app:post(
     end,
     function(self)
       local body, status_code, _ = http.simple(config.api_url .. "/endpoint", {
-        name = "name",
         url = self.POST.url,
       })
       if status_code ~= 200 then
