@@ -25,7 +25,7 @@ app:post(
         url = self.POST.url,
       })
       if status_code ~= 200 then
-        yield_error("Unable to fetch data")
+        yield_error("Unable to persist endpoint data")
       end
       local data = cjson.decode(body)
       self.url = data["url"]
