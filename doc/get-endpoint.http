@@ -1,2 +1,2 @@
 ### Gets all endpoints
-GET http://localhost:8080/endpoint/24
+GET http://localhost:8080/endpoint/1
