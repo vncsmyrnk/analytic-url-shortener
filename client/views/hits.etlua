@@ -3,7 +3,7 @@
 <form class="row g-3" action="/hits" method="get">
   <div>
     <label for="exampleFormControlInput1" class="form-label">Search for hits by typing a hash</label>
-    <input type="text" name="endpoint_hash" class="form-control" id="exampleFormControlInput1" placeholder="251e92b9123" required>
+    <input type="text" name="endpoint_hash" class="form-control" id="exampleFormControlInput1" placeholder="c9a50286-53be-4312-86b2-d8e34c9d0010" required>
   </div>
   <div class="mb-3">
     <button type="submit" class="btn btn-primary mb-3">Check it</button>
